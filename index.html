@@ -1,0 +1,575 @@
+import React, { useState } from 'react';
+import { 
+  Baby, 
+  GraduationCap, 
+  Briefcase, 
+  Home, 
+  Heart, 
+  Users, 
+  Search, 
+  Phone, 
+  Info,
+  ChevronRight,
+  MapPin,
+  Smile,
+  CheckCircle,
+  AlertCircle
+} from 'lucide-react';
+
+const App = () => {
+  const [activeTab, setActiveTab] = useState('전체');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedPolicy, setSelectedPolicy] = useState(null);
+
+  // 카테고리 정의
+  const categories = [
+    { id: '전체', label: '전체보기', icon: <Users size={18} /> },
+    { id: '임신·출산', label: '임신·출산', icon: <Baby size={18} /> },
+    { id: '영유아', label: '영유아', icon: <Smile size={18} /> },
+    { id: '아동·청소년', label: '아동·청소년', icon: <GraduationCap size={18} /> },
+    { id: '청년', label: '청년', icon: <Briefcase size={18} /> },
+    { id: '신중년·어르신', label: '신중년·어르신', icon: <Heart size={18} /> },
+    { id: '귀농귀촌', label: '귀농귀촌', icon: <Home size={18} /> },
+    { id: '전입·기타', label: '전입·기타', icon: <MapPin size={18} /> },
+  ];
+
+  // 정책 데이터 (상세 요건 보강)
+  const policies = [
+    // [임신·출산]
+    { 
+      category: '임신·출산', 
+      title: '출산장려금 지원', 
+      target: '진안군 1년 이상 거주 부모',
+      desc: '첫째아 300만원, 둘째아 500만원, 셋째아 이상 1,000만원 지급',
+      detailCriteria: [
+        '신생아의 출생일 기준으로 부 또는 모가 1년 전부터 계속하여 진안군에 주민등록을 두고 거주해야 함',
+        '거주 기간 1년 미만일 경우, 1년이 경과한 날부터 신청 가능',
+        '신생아는 진안군에 출생신고 및 주민등록 등재 필수'
+      ],
+      department: '여성가족과', 
+      contact: '063-430-2414' 
+    },
+    { 
+      category: '임신·출산', 
+      title: '첫만남 이용권', 
+      target: '모든 출생 아동',
+      desc: '출생 아동당 200만원 이상의 바우처(국민행복카드) 지급', 
+      detailCriteria: [
+        '출생신고되어 주민등록번호를 부여받은 모든 아동',
+        '첫째아 200만원, 둘째아 이상 300만원 지급 (포인트)',
+        '아동 출생일로부터 1년 이내 사용 가능'
+      ],
+      department: '여성가족과', 
+      contact: '063-430-2414' 
+    },
+    { 
+      category: '임신·출산', 
+      title: '임신 축하금', 
+      target: '임신 20주 이상 임신부',
+      desc: '임신부에게 축하금 지급 (진안사랑상품권 최대 30만원)', 
+      detailCriteria: [
+        '신청일 기준 1년 이전부터 진안군에 주민등록을 둔 임신부',
+        '임신 20주 이상부터 분만 전까지 신청 가능'
+      ],
+      department: '보건소', 
+      contact: '063-430-8513' 
+    },
+    { 
+      category: '임신·출산', 
+      title: '산후조리비 지원', 
+      target: '출산일 기준 1년 이상 거주 산모',
+      desc: '산모의 산후 회복을 위한 비용 지원 (최대 100만원, 수급자 200만원)', 
+      detailCriteria: [
+        '출산일 기준 1년 전부터 계속하여 진안군에 거주한 산모',
+        '일반 산모 100만원, 국민기초생활수급자 200만원',
+        '관내/관외 산후조리원 이용료 또는 산후 회복 위한 의료비/약제비 등'
+      ],
+      department: '보건소', 
+      contact: '063-430-8513' 
+    },
+
+    // [영유아]
+    { 
+      category: '영유아', 
+      title: '부모급여', 
+      target: '만 0~1세 아동 양육 가정',
+      desc: '만 0세 월 100만원, 만 1세 월 50만원 지원', 
+      detailCriteria: [
+        '2024년 이후 기준 대폭 상향',
+        '만 0세: 월 100만원',
+        '만 1세: 월 50만원',
+        '어린이집 이용 시 보육료 바우처로 지원되며 차액은 현금 지급'
+      ],
+      department: '여성가족과', 
+      contact: '063-430-2414' 
+    },
+    { 
+      category: '영유아', 
+      title: '아동수당', 
+      target: '만 8세 미만 모든 아동',
+      desc: '월 10만원 현금 지급', 
+      detailCriteria: [
+        '소득·재산 무관하게 만 8세 생일 전월까지 지급',
+        '대한민국 국적을 보유하고 주민등록 번호가 부여된 아동'
+      ],
+      department: '여성가족과', 
+      contact: '063-430-2414' 
+    },
+
+    // [아동·청소년]
+    { 
+      category: '아동·청소년', 
+      title: '청소년 드림카드', 
+      target: '만 8세 ~ 18세 청소년',
+      desc: '월 3~5만원 포인트 바우처 지원 (문화, 진로, 체육활동 등)', 
+      detailCriteria: [
+        '진안군에 주소를 둔 만 8세~18세 청소년',
+        '만 8~15세: 월 3만원',
+        '만 16~18세: 월 5만원',
+        '진안군 내 가맹점(서점, 영화관, 문구점, 미용실 등)에서 사용 가능한 충전식 카드 지급'
+      ],
+      department: '여성가족과', 
+      contact: '063-430-2343' 
+    },
+    { 
+      category: '아동·청소년', 
+      title: '진안사랑장학재단 장학금', 
+      target: '성적 우수 및 특기 학생',
+      desc: '초·중·고·대학생 장학금 지원 (생활비 성격 포함)', 
+      detailCriteria: [
+        '부모 또는 본인이 진안군에 1년(또는 2년) 이상 주소를 둔 자',
+        '성적 우수 장학생, 복지 장학생, 특기 장학생 등 분야별 선발',
+        '대학생: 생활비 지원 성격의 장학금 지급 가능 (타 장학금 중복 가능 여부 확인 필요)'
+      ],
+      department: '행정지원과', 
+      contact: '063-430-2514' 
+    },
+
+    // [청년]
+    { 
+      category: '청년', 
+      title: '전북청년 지역정착 지원', 
+      target: '만 18~39세 농업/중소기업 종사자',
+      desc: '월 30만원씩 최대 1년(360만원) 정착 지원금 지급', 
+      detailCriteria: [
+        '진안군 거주 만 18세~39세 청년',
+        '농업, 임업, 어업, 중소기업(제조업 등), 문화예술 분야 종사자',
+        '가구 중위소득 180% 이하',
+        '전북청년 지역정착 지원사업 선정 필요 (매년 초 모집)'
+      ],
+      department: '농촌활력과', 
+      contact: '063-430-8061' 
+    },
+    { 
+      category: '청년', 
+      title: '청년 주거비 지원', 
+      target: '만 18~45세 무주택 청년',
+      desc: '월 임대료 최대 15만원 지원 (최대 12개월)', 
+      detailCriteria: [
+        '신청일 기준 진안군 거주 만 18세~45세 청년 세대주',
+        '기준중위소득 150% 이하',
+        '전세·월세 임대차 계약 체결 및 거주 중인 무주택자',
+        '공공임대주택 거주자 등은 제외'
+      ],
+      department: '농촌활력과', 
+      contact: '063-430-8061' 
+    },
+    { 
+      category: '청년', 
+      title: '결혼장려금', 
+      target: '만 19~49세 신혼부부',
+      desc: '총 500만원 지원 (3회 분할 지급)', 
+      detailCriteria: [
+        '2019.1.1 이후 혼인 신고한 부부',
+        '혼인 신고일 기준 만 19세 이상 49세 이하',
+        '부부 모두 진안군에 주민등록을 두고 거주',
+        '신청일 기준 부부 중 1명은 혼인 전부터 거주하거나, 부부 모두 6개월 이상 계속 거주 시 신청 가능'
+      ],
+      department: '인구활력팀', 
+      contact: '063-430-2837' 
+    },
+    { 
+      category: '청년', 
+      title: '청년꿀벌집 (쉐어하우스)', 
+      target: '만 18~45세 예비 귀농귀촌인 등',
+      desc: '저렴한 임대료로 거주 가능한 쉐어하우스 제공', 
+      detailCriteria: [
+        '입주 자격: 진안군 거주 또는 전입 예정인 만 18세~45세 청년',
+        '1순위: 귀농귀촌 희망자(타지역 거주 1년 이상)',
+        '저렴한 월 임대료로 개인 공간 및 공유 공간 이용 가능'
+      ],
+      department: '농촌활력과', 
+      contact: '063-430-8061' 
+    },
+
+    // [신중년·어르신]
+    { 
+      category: '신중년·어르신', 
+      title: '어르신 이·미용비 지원', 
+      target: '만 70세 이상 어르신',
+      desc: '연 12만원 상당(분기별 지급) 이·미용권 지원', 
+      detailCriteria: [
+        '지급 기준일 현재 진안군에 주민등록을 둔 만 70세 이상 어르신',
+        '관내 가맹점(미용실, 이용원)에서 사용 가능한 전용 카드 지급'
+      ],
+      department: '사회복지과', 
+      contact: '063-430-2913' 
+    },
+    { 
+      category: '신중년·어르신', 
+      title: '농어촌버스 무료이용', 
+      target: '만 65세 이상 등 교통약자',
+      desc: '월 24회 무료 이용 가능', 
+      detailCriteria: [
+        '진안군에 주소를 둔 만 65세 이상 어르신',
+        '장애인, 국가유공자 등 교통약자 포함',
+        '교통카드 발급 후 사용'
+      ],
+      department: '건설교통과', 
+      contact: '063-430-2355' 
+    },
+    { 
+      category: '신중년·어르신', 
+      title: '치매 조기검진 및 치료비', 
+      target: '만 60세 이상 군민',
+      desc: '검진비 무료 및 치료비(약제비) 월 3만원 한도 지원', 
+      detailCriteria: [
+        '치매안심센터 등록 치매환자',
+        '기준 중위소득 120% 이하 (단, 보훈대상자 등 예외 있음)',
+        '진료비 및 약제비 본인부담금 지원'
+      ],
+      department: '보건소(치매안심센터)', 
+      contact: '063-430-8513' 
+    },
+
+    // [귀농귀촌]
+    { 
+      category: '귀농귀촌', 
+      title: '귀농귀촌 이사비용 지원', 
+      target: '타 시·도 1년 이상 거주 후 전입자',
+      desc: '세대당 50만원 지원 (실비)', 
+      detailCriteria: [
+        '타 시·지역(동 지역)에서 1년 이상 거주하다가 진안군으로 전입한 세대',
+        '2인 이상 전입 세대 (단독 세대는 지원 불가할 수 있으니 확인 필요)',
+        '전입일로부터 6개월~1년 이내 신청 필요'
+      ],
+      department: '농촌활력과', 
+      contact: '063-430-8061' 
+    },
+    { 
+      category: '귀농귀촌', 
+      title: '주택수리비 지원', 
+      target: '5년 이내 전입한 귀농귀촌인',
+      desc: '주택 리모델링/보일러 교체 등 최대 1,000만원 (자부담 50%)', 
+      detailCriteria: [
+        '전입 5년 이내의 귀농귀촌인',
+        '본인 소유 주택 또는 5년 이상 임차 주택',
+        '사업비의 50% 지원 (최대 1,000만원 한도), 나머지 자부담'
+      ],
+      department: '농촌활력과', 
+      contact: '063-430-8061' 
+    },
+    { 
+      category: '귀농귀촌', 
+      title: '귀농인의 집', 
+      target: '예비 귀농귀촌인',
+      desc: '임시 거주 공간 제공 (월 15~20만원 내외)', 
+      detailCriteria: [
+        '진안군으로 이주를 희망하는 타 지역 거주자',
+        '가족 단위 입주자 우대',
+        '이용 기간: 1년 이내 (최대 1년 연장 가능)'
+      ],
+      department: '농촌활력과', 
+      contact: '063-430-8061' 
+    },
+
+    // [전입·기타]
+    { 
+      category: '전입·기타', 
+      title: '전입장려금', 
+      target: '타 시군구에서 전입한 자',
+      desc: '1인당 총 20만원 지급 (6개월 후 10만, 1년 6개월 후 10만)', 
+      detailCriteria: [
+        '타 시군구에서 진안군으로 전입 신고한 자',
+        '지급 시기: 전입 후 6개월 경과 시 10만원, 1년 6개월 경과 시 10만원',
+        '진안사랑상품권 또는 선불카드로 지급',
+        '군인, 학생 등 특정 대상은 별도 기준 적용될 수 있음'
+      ],
+      department: '인구활력팀', 
+      contact: '063-430-2837' 
+    },
+    { 
+      category: '전입·기타', 
+      title: '다자녀 패밀리카 지원', 
+      target: '3자녀 이상 양육 가정',
+      desc: '자동차 취득세 등 지원 (최대 500만원)', 
+      detailCriteria: [
+        '진안군에 주민등록을 둔 미성년 자녀 3명 이상을 양육하는 가정',
+        '7인승~10인승 이하 승용자동차 구입 시',
+        '연간 2대 한정 지원'
+      ],
+      department: '여성가족과', 
+      contact: '063-430-2414' 
+    },
+  ];
+
+  // 필터링 로직
+  const filteredPolicies = policies.filter(policy => {
+    const matchesCategory = activeTab === '전체' || policy.category === activeTab;
+    const matchesSearch = policy.title.includes(searchTerm) || 
+                          policy.desc.includes(searchTerm) || 
+                          policy.target.includes(searchTerm);
+    return matchesCategory && matchesSearch;
+  });
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-gray-800 font-sans pb-20">
+      {/* Header */}
+      <header className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg sticky top-0 z-50">
+        <div className="max-w-4xl mx-auto px-4 py-5">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold flex items-center gap-2">
+                <Users className="hidden md:block" strokeWidth={2.5} />
+                진안군 인구정책 내비게이터
+              </h1>
+              <p className="text-emerald-100 text-sm mt-1 font-medium">
+                🔎 나에게 딱 맞는 혜택과 자격 요건을 찾아보세요
+              </p>
+            </div>
+            {/* Search Bar */}
+            <div className="relative w-full md:w-72">
+              <input
+                type="text"
+                placeholder="검색어 입력 (예: 청년, 300만원)"
+                className="w-full pl-10 pr-4 py-2.5 rounded-full text-gray-800 bg-white/95 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-300/50 shadow-lg transition-all"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <Search className="absolute left-3.5 top-3 text-gray-400" size={18} />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        
+        {/* Category Navigation */}
+        <div className="mb-8 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
+          <div className="flex gap-2 min-w-max">
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => {
+                  setActiveTab(cat.id);
+                  setSearchTerm('');
+                  setSelectedPolicy(null);
+                }}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-full transition-all duration-200 text-sm font-bold whitespace-nowrap border
+                  ${activeTab === cat.id 
+                    ? 'bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-200 scale-105' 
+                    : 'bg-white border-gray-200 text-gray-500 hover:bg-emerald-50 hover:border-emerald-200 hover:text-emerald-600'}`}
+              >
+                {cat.icon}
+                {cat.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Results Info */}
+        <div className="flex justify-between items-center mb-4 px-1">
+          <h2 className="text-xl font-bold text-gray-800">
+            {activeTab} 지원정책 <span className="text-emerald-600 ml-1">{filteredPolicies.length}건</span>
+          </h2>
+        </div>
+
+        {/* Policy Grid */}
+        {filteredPolicies.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {filteredPolicies.map((policy, index) => (
+              <div 
+                key={index}
+                onClick={() => setSelectedPolicy(policy)}
+                className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl hover:border-emerald-300 transition-all duration-300 cursor-pointer p-6 flex flex-col justify-between group relative overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-150 duration-500 z-0"></div>
+                
+                <div className="z-10 relative">
+                  <div className="flex justify-between items-start mb-3">
+                    <span className="inline-flex items-center px-2.5 py-1 bg-emerald-100 text-emerald-800 text-xs rounded-md font-bold tracking-wide">
+                      {policy.category}
+                    </span>
+                  </div>
+                  
+                  <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-emerald-700 leading-snug">
+                    {policy.title}
+                  </h3>
+
+                  {/* Target Badge (New Feature) */}
+                  <div className="mb-3 inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-100 w-full">
+                    <CheckCircle size={14} className="text-emerald-500 min-w-[14px]" />
+                    <span className="text-xs font-semibold text-gray-600 truncate">
+                      대상: {policy.target}
+                    </span>
+                  </div>
+
+                  <p className="text-gray-600 text-sm leading-relaxed line-clamp-2 mb-2">
+                    {policy.desc}
+                  </p>
+                </div>
+
+                <div className="mt-4 pt-4 border-t border-gray-50 flex items-center justify-between text-xs z-10">
+                   <span className="font-medium text-gray-400 group-hover:text-emerald-600 transition-colors">
+                    {policy.department}
+                  </span>
+                  <span className="flex items-center gap-1 text-emerald-600 font-bold bg-emerald-50 px-3 py-1 rounded-full group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                    상세보기 <ChevronRight size={14} />
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-24 bg-white rounded-2xl shadow-sm border border-dashed border-gray-300">
+            <div className="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Search className="text-gray-300" size={32} />
+            </div>
+            <p className="text-gray-500 font-bold text-lg">검색 결과가 없습니다.</p>
+            <p className="text-sm text-gray-400 mt-2">다른 검색어나 카테고리를 선택해보세요.</p>
+          </div>
+        )}
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-800 text-gray-400 py-10 mt-12 border-t border-gray-700">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="flex flex-col md:flex-row justify-between gap-8 text-center md:text-left">
+            <div>
+              <h3 className="text-white font-bold text-lg mb-4 flex items-center justify-center md:justify-start gap-2">
+                <Phone size={18} /> 주요 민원 상담 전화
+              </h3>
+              <ul className="space-y-2 text-sm font-medium">
+                <li><span className="text-gray-500 w-20 inline-block">인구정책</span> 063-430-2837 (인구활력팀)</li>
+                <li><span className="text-gray-500 w-20 inline-block">귀농귀촌</span> 063-430-8061 (농촌활력과)</li>
+                <li><span className="text-gray-500 w-20 inline-block">임신·출산</span> 063-430-8513 (보건소)</li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-xs leading-relaxed max-w-sm mx-auto md:mx-0">
+                * 본 서비스는 진안군 인구정책 웹포스터 및 2024-2025년도 주요 공고를 기반으로 제작되었습니다.<br/>
+                * 예산 소진 시 조기 마감되거나, 세부 자격 요건이 변경될 수 있으므로 <span className="text-emerald-400">반드시 담당 부서에 최종 확인</span> 후 신청하시기 바랍니다.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      {/* Detail Modal */}
+      {selectedPolicy && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 z-50 animate-in fade-in duration-200">
+          <div className="bg-white md:rounded-3xl rounded-t-3xl w-full max-w-lg shadow-2xl overflow-hidden transform transition-all flex flex-col max-h-[90vh]">
+            
+            {/* Modal Header */}
+            <div className="bg-gradient-to-br from-emerald-600 to-teal-700 p-6 md:p-8 text-white relative shrink-0">
+              <button 
+                onClick={() => setSelectedPolicy(null)}
+                className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
+              >
+                <div className="w-4 h-4 relative">
+                  <div className="absolute inset-0 rotate-45 bg-white h-0.5 w-4 top-2"></div>
+                  <div className="absolute inset-0 -rotate-45 bg-white h-0.5 w-4 top-2"></div>
+                </div>
+              </button>
+              
+              <span className="inline-block px-3 py-1 bg-black/20 text-emerald-50 text-xs font-bold rounded-lg mb-3 border border-white/10">
+                {selectedPolicy.category}
+              </span>
+              <h3 className="text-2xl md:text-3xl font-bold leading-tight mb-2">
+                {selectedPolicy.title}
+              </h3>
+              <div className="flex items-center gap-2 text-emerald-100 text-sm font-medium bg-emerald-800/30 px-3 py-2 rounded-lg backdrop-blur-sm inline-flex">
+                <Users size={16} />
+                대상: {selectedPolicy.target}
+              </div>
+            </div>
+
+            {/* Modal Body (Scrollable) */}
+            <div className="p-6 md:p-8 overflow-y-auto">
+              {/* Summary Section */}
+              <div className="mb-8">
+                <h4 className="flex items-center gap-2 text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">
+                  <Info size={16} /> 지원 내용
+                </h4>
+                <div className="bg-emerald-50/50 p-5 rounded-xl border border-emerald-100">
+                  <p className="text-gray-800 text-lg leading-relaxed font-bold">
+                    {selectedPolicy.desc}
+                  </p>
+                </div>
+              </div>
+
+              {/* Detailed Criteria Section (New) */}
+              {selectedPolicy.detailCriteria && (
+                <div className="mb-8">
+                  <h4 className="flex items-center gap-2 text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">
+                    <CheckCircle size={16} /> 상세 자격 요건
+                  </h4>
+                  <ul className="space-y-3">
+                    {selectedPolicy.detailCriteria.map((item, idx) => (
+                      <li key={idx} className="flex items-start gap-3 text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <span className="mt-1.5 w-1.5 h-1.5 bg-emerald-500 rounded-full shrink-0"></span>
+                        <span className="text-sm font-medium leading-relaxed">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-2 text-xs text-orange-500 flex items-center gap-1">
+                    <AlertCircle size={12} /> 세부 기준은 예산 및 시기에 따라 변경될 수 있습니다.
+                  </p>
+                </div>
+              )}
+              
+              {/* Contact Section */}
+              <div className="flex flex-col gap-3 mt-auto">
+                <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-1">문의 및 신청</h4>
+                <div className="flex items-center justify-between p-4 rounded-xl border border-gray-200 bg-white shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
+                      <Briefcase size={20} />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 font-medium">담당부서</p>
+                      <p className="font-bold text-gray-800">{selectedPolicy.department}</p>
+                    </div>
+                  </div>
+                  <div className="h-8 w-px bg-gray-200"></div>
+                  <a 
+                    href={`tel:${selectedPolicy.contact}`}
+                    className="flex items-center gap-3 group"
+                  >
+                    <div className="text-right">
+                      <p className="text-xs text-gray-500 font-medium group-hover:text-blue-600 transition-colors">전화 연결</p>
+                      <p className="font-bold text-blue-600 text-lg">{selectedPolicy.contact}</p>
+                    </div>
+                    <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                      <Phone size={20} />
+                    </div>
+                  </a>
+                </div>
+              </div>
+
+              <button 
+                onClick={() => setSelectedPolicy(null)}
+                className="w-full mt-8 bg-gray-900 text-white py-4 rounded-xl font-bold text-lg hover:bg-gray-800 active:scale-95 transition-all shadow-lg"
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default App;
